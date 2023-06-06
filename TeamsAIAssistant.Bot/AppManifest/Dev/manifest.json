@@ -1,0 +1,48 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.12/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.12",
+  "version": "1.0.0",
+  "id": "97b82d66-1601-44d4-86b8-ee9fff7a01e9",
+  "packageName": "com.dewiride.aiassistant",
+  "developer": {
+    "name": "JD Bots",
+    "websiteUrl": "https://dewiride.com",
+    "privacyUrl": "https://dewiride.com/privacy",
+    "termsOfUseUrl": "https://dewiride.com/termsofuse"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "AI Assistant",
+    "full": "Personal AI Assistant"
+  },
+  "description": {
+    "short": "An AI Assistant for your day to day work.",
+    "full": "An AI Assistant for your day to day work."
+  },
+  "accentColor": "#FFFFFF",
+  "bots": [
+    {
+      "botId": "97b82d66-1601-44d4-86b8-ee9fff7a01e9",
+      "scopes": [
+        "personal"
+      ],
+      "supportsFiles": true,
+      "isNotificationOnly": false
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": [
+    "token.botframework.com",
+    "*.ngrok-free.app"
+  ],
+  "webApplicationInfo": {
+    "id": "97b82d66-1601-44d4-86b8-ee9fff7a01e9",
+    "resource": "api://botid-97b82d66-1601-44d4-86b8-ee9fff7a01e9"
+  }
+}
