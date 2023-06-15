@@ -5,19 +5,23 @@
 
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Http;
 
 namespace TeamsAIAssistant.Bot
 {
     public class AdapterWithErrorHandler : CloudAdapter
     {
-        public AdapterWithErrorHandler(BotFrameworkAuthentication auth, ILogger<IBotFrameworkHttpAdapter> logger, ConversationState conversationState = default)
-            : base(auth, logger)
+        public AdapterWithErrorHandler(BotFrameworkAuthentication auth, ILogger<IBotFrameworkHttpAdapter> logger, IConfiguration configuration, IStorage storage, IHttpClientFactory httpClientFactory, ConversationState conversationState = default)
+            : base(configuration, httpClientFactory, logger)
         {
+            base.Use(new TeamsSSOTokenExchangeMiddleware(storage, configuration["ConnectionName"]));
             OnTurnError = async (turnContext, exception) =>
             {
                 // Log any leaked exception from the application.

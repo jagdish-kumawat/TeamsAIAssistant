@@ -1,10 +1,12 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TeamsAIAssistant.Bot.Dialogs.Common;
 using TeamsAIAssistant.Bot.Interfaces.Azure;
 using TeamsAIAssistant.Bot.Services.Azure;
 using TeamsAIAssistant.Bot.Services.Cards;
@@ -24,10 +26,11 @@ namespace TeamsAIAssistant.Bot.Dialogs.RequestTimeOff
             _azureStorageHelper = azureStorageHelper;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new TextPrompt(RequestTimeOffDialogID, RequestTimeOffValidatorAsync));
+            AddDialog(new LoginDialog(_configuration));
 
             var waterfallSteps = new WaterfallStep[]
             {
+                LoginStepAsync,
                 GetTimeOffBalanceStepAsync,
                 RequestTimeOffStepAsync,
                 ActStepAsync,
@@ -37,6 +40,11 @@ namespace TeamsAIAssistant.Bot.Dialogs.RequestTimeOff
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
+        }
+
+        private async Task<DialogTurnResult> LoginStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            return await stepContext.BeginDialogAsync(nameof(LoginDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> GetTimeOffBalanceStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -54,8 +62,6 @@ namespace TeamsAIAssistant.Bot.Dialogs.RequestTimeOff
                 await stepContext.Context.SendActivityAsync(reply);
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { }, cancellationToken);
             }
-            else
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your current time off balance is " + timeOffBalance.Balance.ToString("0.00") + " hours."), cancellationToken);
 
             return await stepContext.NextAsync(null, cancellationToken);
         }
@@ -66,74 +72,167 @@ namespace TeamsAIAssistant.Bot.Dialogs.RequestTimeOff
 
             if (timeOffBalance == null)
             {
-                string balance = (string)stepContext.Result;
-                timeOffBalance = new TimeOffBalanceEntity
-                {
-                    PartitionKey = stepContext.Context.Activity.Conversation.TenantId,
-                    RowKey = stepContext.Context.Activity.From.AadObjectId,
-                    Balance = Convert.ToDouble(balance)
-                };
+                var formText = stepContext.Context.Activity.Text;
+                var formData = stepContext.Context.Activity.Value;
 
-                bool entityAdded = await _azureStorageHelper.AddEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], timeOffBalance);
-                if (entityAdded)
+                if (formText != null)
                 {
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your time off balance has been saved."), cancellationToken);
-                    stepContext.Values["TimeOffBalance"] = await _azureStorageHelper.GetEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], stepContext.Context.Activity.Conversation.TenantId, stepContext.Context.Activity.From.AadObjectId);
-                }  
-                else
-                {
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("There was an error saving your time off balance."), cancellationToken);
-                    return await stepContext.EndDialogAsync(null, cancellationToken);
-                } 
-            }
+                    if (stepContext.Context.Activity.ReplyToId != null)
+                        await stepContext.Context.DeleteActivityAsync(stepContext.Context.Activity.ReplyToId, cancellationToken);
 
-            return await stepContext.PromptAsync(RequestTimeOffDialogID, new PromptOptions { Prompt = MessageFactory.Text("Please enter the number of hours you would like to request off.") }, cancellationToken);
-        }
-
-        private async Task<bool> RequestTimeOffValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
-        {
-            string hoursRequested = promptContext.Recognized.Value;
-            double hoursRequestedDouble;
-            if (double.TryParse(hoursRequested, out hoursRequestedDouble))
-            {
-                if (hoursRequestedDouble > 0)
-                {
-                    var currentBalance = await _azureStorageHelper.GetEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], promptContext.Context.Activity.Conversation.TenantId, promptContext.Context.Activity.From.AadObjectId);
-                    if (currentBalance.Balance < hoursRequestedDouble)
+                    if (formText.Equals("new-user-save-timeoff"))
                     {
-                        await promptContext.Context.SendActivityAsync(MessageFactory.Text("You do not have enough time off balance to request " + hoursRequested + " hours off. Please request for time off less than " + currentBalance.Balance.ToString("0.00") + " hours."), cancellationToken);
-                        return await Task.FromResult(false);
+                        JObject valueObject = (JObject)formData;
+                        string newBalance = string.Empty;
+                        string updateType = string.Empty;
+                        string balanceRegularUpdate = string.Empty;
+
+                        if ((string)valueObject["new-balance"] != null)
+                            newBalance = (string)valueObject["new-balance"];
+
+                        if ((string)valueObject["update-type"] != null)
+                            updateType = (string)valueObject["update-type"];
+
+                        if ((string)valueObject["balance-regular-update"] != null)
+                            balanceRegularUpdate = (string)valueObject["balance-regular-update"];
+
+                        if (string.IsNullOrEmpty(newBalance) && string.IsNullOrEmpty(updateType) && string.IsNullOrEmpty(balanceRegularUpdate))
+                        {
+                            await stepContext.Context.SendActivityAsync(MessageFactory.Text("No data is entered. Skipped."), cancellationToken);
+                            return await stepContext.EndDialogAsync(null, cancellationToken);
+                        }
+                        else
+                        {
+                            timeOffBalance = new TimeOffBalanceEntity
+                            {
+                                PartitionKey = stepContext.Context.Activity.Conversation.TenantId,
+                                RowKey = stepContext.Context.Activity.From.AadObjectId,
+                                Balance = Convert.ToDouble(newBalance),
+                                UpdateType = updateType,
+                                BalanceRegularUpdate = Convert.ToDouble(balanceRegularUpdate)
+                            };
+
+                            bool entityAdded = await _azureStorageHelper.AddEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], timeOffBalance);
+                            if (entityAdded)
+                            {
+                                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your time off balance has been saved."), cancellationToken);
+                                stepContext.Values["TimeOffBalance"] = await _azureStorageHelper.GetEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], stepContext.Context.Activity.Conversation.TenantId, stepContext.Context.Activity.From.AadObjectId);
+                            }
+                            else
+                            {
+                                await stepContext.Context.SendActivityAsync(MessageFactory.Text("There was an error saving your time off balance."), cancellationToken);
+                                return await stepContext.EndDialogAsync(null, cancellationToken);
+                            }
+                        }
                     }
-                    return await Task.FromResult(true);
-                }
-                else
-                {
-                    await promptContext.Context.SendActivityAsync(MessageFactory.Text("Please enter a number greater than 0."), cancellationToken);
-                    return await Task.FromResult(false);
+                    else if (formText.Equals("cancel-timeoff"))
+                    {
+                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("I skipped saving your time off initial data. No data is stored from the form."), cancellationToken);
+                    }
                 }
             }
-            else
+
+            var getBalance = await _azureStorageHelper.GetEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], stepContext.Context.Activity.Conversation.TenantId, stepContext.Context.Activity.From.AadObjectId);
+
+            if (getBalance == null)
             {
-                await promptContext.Context.SendActivityAsync(MessageFactory.Text("Please enter a valid number."), cancellationToken);
-                return await Task.FromResult(false);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("I failed to get your current balance. Please try again later."), cancellationToken);
+                return await stepContext.EndDialogAsync(null, cancellationToken);
             }
+
+            var paths = new string[] { ".", "Cards", "RequestTimeOff", "RequestTimeOff.json" };
+            object data = new { CurrentBalance = getBalance.Balance, ManagerId = getBalance.ManagerId, ManagerYes = string.IsNullOrEmpty(getBalance.ManagerId) ? "false" : "true" };
+            var attachment = CardsHelper.CreateAdaptiveCardWithData(paths, data);
+            var reply = MessageFactory.Attachment(attachment);
+            await stepContext.Context.SendActivityAsync(reply);
+
+            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            string hoursRequested = (string)stepContext.Result;
-            var timeOffBalance = (TimeOffBalanceEntity)stepContext.Values["TimeOffBalance"];
+            var formText = stepContext.Context.Activity.Text;
+            var formData = stepContext.Context.Activity.Value;
 
-            timeOffBalance.Balance = timeOffBalance.Balance - Convert.ToDouble(hoursRequested);
-            bool entityAdded = await _azureStorageHelper.AddEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], timeOffBalance);
+            if (formText != null)
+            {
+                if (stepContext.Context.Activity.ReplyToId != null)
+                    await stepContext.Context.DeleteActivityAsync(stepContext.Context.Activity.ReplyToId, cancellationToken);
 
-            if (entityAdded)
-            {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Your time off balance has been updated. Your new balance is {timeOffBalance.Balance.ToString("0.00")} hours."), cancellationToken);
-            }
-            else
-            {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("There was an error updating your time off balance."), cancellationToken);
+                if (formText.Equals("request-timeoff-submit"))
+                {
+                    double hoursRequested = 0;
+                    string managerId = string.Empty;
+                    bool useSameManager = false;
+                    string reason = string.Empty;
+
+                    JObject valueObject = (JObject)formData;
+
+                    if ((string)valueObject["timeoff-requested"] != null)
+                        hoursRequested = (double)valueObject["timeoff-requested"];
+
+                    if ((string)valueObject["userId"] != null)
+                        managerId = (string)valueObject["userId"];
+                        
+                    useSameManager = (bool)valueObject["same-manager"];
+
+                    if ((string)valueObject["timeoff-reason"] != null)
+                        reason = (string)valueObject["timeoff-reason"];
+
+                    var currentBalance = await _azureStorageHelper.GetEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], stepContext.Context.Activity.Conversation.TenantId, stepContext.Context.Activity.From.AadObjectId);
+
+                    if (currentBalance == null)
+                    {
+                        await stepContext.Context.SendActivityAsync(MessageFactory.Text("I failed to get your current balance. Please try again later."), cancellationToken);
+                        return await stepContext.EndDialogAsync(null, cancellationToken);
+                    }
+                    else
+                    {
+                        if (currentBalance.Balance < hoursRequested)
+                        {
+                            await stepContext.Context.SendActivityAsync(MessageFactory.Text("You don't have enough balance to request this time off."), cancellationToken);
+                            return await stepContext.EndDialogAsync(null, cancellationToken);
+                        }
+
+                        if (useSameManager)
+                        {
+                            currentBalance.ManagerId = managerId;
+                        }
+                        else
+                        {
+                            currentBalance.ManagerId = string.Empty;
+                        }
+
+                        await _azureStorageHelper.AddEntityAsync<TimeOffBalanceEntity>(_configuration["StorageAccount:TimeOffBalanceTableName"], currentBalance);
+
+                        var requestRaised = await _azureStorageHelper.AddEntityAsync<TimeOffRequestsEntity>(_configuration["StorageAccount:TimeOffRequestTableName"], new TimeOffRequestsEntity
+                        {
+                            PartitionKey = stepContext.Context.Activity.Conversation.TenantId,
+                            RowKey = Guid.NewGuid().ToString(),
+                            ApproverId = currentBalance.ManagerId,
+                            CurrentBalance = currentBalance.Balance,
+                            HoursRequested = hoursRequested,
+                            Reason = reason,
+                            Status = "Pending",
+                        });
+
+                        if (requestRaised)
+                        {
+                            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your time off request has been submitted and sent for approval."), cancellationToken);
+                            return await stepContext.EndDialogAsync(null, cancellationToken);
+                        }
+                        else
+                        {
+                            await stepContext.Context.SendActivityAsync(MessageFactory.Text("There was an error submitting your time off request."), cancellationToken);
+                            return await stepContext.EndDialogAsync(null, cancellationToken);
+                        }
+                    }
+                }
+                else if (formText.Equals("skip-request-timeoff-submit"))
+                {
+                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("I skipped saving your time off request. No data is stored from the form."), cancellationToken);
+                    return await stepContext.EndDialogAsync(null, cancellationToken);
+                }
             }
 
             return await stepContext.EndDialogAsync(null, cancellationToken);

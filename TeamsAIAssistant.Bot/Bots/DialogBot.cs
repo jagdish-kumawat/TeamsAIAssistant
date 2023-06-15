@@ -52,5 +52,14 @@ namespace TeamsAIAssistant.Bot.Bots
             // Run the Dialog with the new message Activity.
             await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
+
+        protected override async Task OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            Logger.LogInformation("Running dialog with signin/verifystate from an Invoke Activity.");
+
+            // The OAuth Prompt needs to see the Invoke Activity in order to complete the login process.
+            // Run the Dialog with the new Invoke Activity.
+            await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);
+        }
     }
 }

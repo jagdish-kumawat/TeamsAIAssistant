@@ -77,11 +77,11 @@
         "msteams": {
           "type": "messageBack",
           "displayText": "",
-          "text": "cancel",
+          "text": "cancel-timeoff",
           "value": {
-            "id": "cancel",
-            "action": "cancel",
-            "value": "cancel",
+            "id": "cancel-timeoff",
+            "action": "cancel-timeoff",
+            "value": "cancel-timeoff",
             "delete": false
           }
         }

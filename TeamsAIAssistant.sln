@@ -5,7 +5,9 @@ VisualStudioVersion = 17.7.33711.374
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsAIAssistant.Bot", "TeamsAIAssistant.Bot\TeamsAIAssistant.Bot.csproj", "{35860D88-1897-448A-B810-8B48631D668D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamsAIAssistant.Data", "TeamsAIAssistant.Data\TeamsAIAssistant.Data.csproj", "{D68F9EC0-7031-4575-9D7E-D6C8E9C0F024}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsAIAssistant.Data", "TeamsAIAssistant.Data\TeamsAIAssistant.Data.csproj", "{D68F9EC0-7031-4575-9D7E-D6C8E9C0F024}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamsAIAssistant.Functions", "TeamsAIAssistant.Functions\TeamsAIAssistant.Functions.csproj", "{E3B6A5CA-27D1-415B-B186-DA36102C3C58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D68F9EC0-7031-4575-9D7E-D6C8E9C0F024}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D68F9EC0-7031-4575-9D7E-D6C8E9C0F024}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D68F9EC0-7031-4575-9D7E-D6C8E9C0F024}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3B6A5CA-27D1-415B-B186-DA36102C3C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3B6A5CA-27D1-415B-B186-DA36102C3C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3B6A5CA-27D1-415B-B186-DA36102C3C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3B6A5CA-27D1-415B-B186-DA36102C3C58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

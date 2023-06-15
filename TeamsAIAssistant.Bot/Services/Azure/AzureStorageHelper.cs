@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TeamsAIAssistant.Bot.Interfaces.Azure;
@@ -259,6 +261,56 @@ namespace TeamsAIAssistant.Bot.Services.Azure
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        // get all entities data from azure table storage
+        public async Task<List<T>?> GetAllEntitiesAsync<T>(string tableName) where T : class, ITableEntity, new()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_configuration["StorageAccountConnectionString"]))
+                {
+                    throw new Exception("NOTE: Storage Account is not configured.");
+                }
+
+                var tableClient = await GetTableClient(tableName);
+
+                // <get_object>
+                // Get item from server-side table
+                var response = tableClient.Query<T>();
+                // </get_object>
+
+                return response.ToList();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        // get all entities data from azure table storage based on filter
+        public async Task<List<T>?> GetAllEntitiesAsync<T>(string tableName, FormattableString filter) where T : class, ITableEntity, new()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_configuration["StorageAccountConnectionString"]))
+                {
+                    throw new Exception("NOTE: Storage Account is not configured.");
+                }
+
+                var tableClient = await GetTableClient(tableName);
+
+                // <get_object>
+                // Get item from server-side table
+                var response = tableClient.Query<T>(filter: TableClient.CreateQueryFilter(filter));
+                // </get_object>
+
+                return response.ToList();
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }

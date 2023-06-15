@@ -9,5 +9,8 @@ namespace TeamsAIAssistant.Data.AzureTableEntity.RequestTimeOff
     public class TimeOffBalanceEntity : CommonEntity
     {
         public double Balance { get; set; }
+        public string UpdateType { get; set; }
+        public double BalanceRegularUpdate { get; set; }
+        public string? ManagerId { get; set; }
     }
 }

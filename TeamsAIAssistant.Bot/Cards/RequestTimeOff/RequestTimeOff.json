@@ -1,0 +1,112 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Request Time Off",
+      "wrap": true,
+      "weight": "Bolder",
+      "horizontalAlignment": "Center"
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "Current Balance",
+          "value": "${CurrentBalance} hours"
+        }
+      ]
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "For example, 2",
+      "label": "Please enter the number of hours you would like to request off.",
+      "isRequired": true,
+      "errorMessage": "This is required.",
+      "regex": "^-?\\d+(\\.\\d+)?$",
+      "id": "timeoff-requested"
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "Why do you want to request time off?",
+      "label": "Reason for Time Off",
+      "isMultiline": true,
+      "isRequired": true,
+      "errorMessage": "Reason is required.",
+      "id": "timeoff-reason"
+    },
+    {
+      "columns": [
+        {
+          "width": "stretch",
+          "items": [
+            {
+              "choices.data": {
+                "type": "Data.Query",
+                "dataset": "graph.microsoft.com/users"
+              },
+              "id": "userId",
+              "type": "Input.ChoiceSet",
+              "value": "${ManagerId}",
+              "placeholder": "Select your manager",
+              "wrap": true,
+              "isRequired": true,
+              "errorMessage": "Manager is required.",
+              "label": "Select your manager to send your time off request:"
+            }
+          ],
+          "type": "Column"
+        }
+      ],
+      "type": "ColumnSet"
+    },
+    {
+      "type": "Input.Toggle",
+      "title": "Would you like to use the same manager for all your future requests?",
+      "wrap": true,
+      "id": "same-manager",
+      "value": "${ManagerYes}",
+      "label": "(Optional)"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Request Time Off",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "",
+          "text": "request-timeoff-submit",
+          "value": {
+            "id": "request-timeoff-submit",
+            "action": "request-timeoff-submit",
+            "value": "request-timeoff-submit",
+            "delete": false
+          }
+        }
+      },
+      "associatedInputs": "auto"
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Skip",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "",
+          "text": "skip-request-timeoff-submit",
+          "value": {
+            "id": "skip-request-timeoff-submit",
+            "action": "skip-request-timeoff-submit",
+            "value": "skip-request-timeoff-submit",
+            "delete": false
+          }
+        }
+      },
+      "associatedInputs": "none"
+    }
+  ]
+}
