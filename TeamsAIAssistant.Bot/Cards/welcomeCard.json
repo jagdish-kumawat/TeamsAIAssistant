@@ -1,46 +1,88 @@
 {
-  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
-  "version": "1.0",
+  "version": "1.4",
   "body": [
     {
-      "type": "Image",
-      "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU",
-      "size": "stretch"
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch"
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "Image",
+              "url": "${LogoUrl}",
+              "size": "Large",
+              "horizontalAlignment": "Right"
+            }
+          ]
+        }
+      ]
     },
     {
-      "type": "TextBlock",
-      "spacing": "medium",
-      "size": "default",
-      "weight": "bolder",
-      "text": "Welcome to Bot Framework!",
-      "wrap": true,
-      "maxLines": 0
-    },
-    {
-      "type": "TextBlock",
-      "size": "default",
-      "isSubtle": true,
-      "text": "Now that you have successfully run your bot, follow the links in this Adaptive Card to expand your knowledge of Bot Framework.",
-      "wrap": true,
-      "maxLines": 0
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "size": "Large",
+          "weight": "Bolder",
+          "text": "Welcome to the AI Assistant!",
+          "horizontalAlignment": "Center",
+          "wrap": true
+        },
+        {
+          "type": "TextBlock",
+          "size": "Medium",
+          "text": "Hello **${Username}**! I am AI Assistant, your personal AI companion ready to help you with various tasks and provide information.",
+          "wrap": true
+        },
+        {
+          "type": "TextBlock",
+          "text": "Here are a few things I can assist you with:",
+          "wrap": true
+        },
+        {
+          "type": "FactSet",
+          "facts": [
+            {
+              "title": "Request Time Off",
+              "value": "I can help you request time off and get it approved by your manager."
+            },
+            {
+              "title": "Knowledge Base",
+              "value": "Ask me questions, and I'll do my best to provide accurate answers and information."
+            },
+            {
+              "title": "Reminders",
+              "value": "Set reminders for important events, meetings, or deadlines."
+            }
+          ]
+        }
+      ]
     }
   ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "actions": [
     {
-      "type": "Action.OpenUrl",
-      "title": "Get an overview",
-      "url": "https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0"
-    },
-    {
-      "type": "Action.OpenUrl",
-      "title": "Ask a question",
-      "url": "https://stackoverflow.com/questions/tagged/botframework"
-    },
-    {
-      "type": "Action.OpenUrl",
-      "title": "Learn how to deploy",
-      "url": "https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-deploy-azure?view=azure-bot-service-4.0"
+      "type": "Action.Submit",
+      "title": "Request TimeOff",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "",
+          "text": "request-timeoff",
+          "value": {
+            "id": "request-timeoff",
+            "action": "request-timeoff",
+            "value": "request-timeoff",
+            "delete": false
+          }
+        }
+      }
     }
   ]
 }

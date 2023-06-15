@@ -1,0 +1,92 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "I see this is your first time using the time off feature in this bot. Please fill the below form to get started.",
+      "wrap": true,
+      "weight": "Bolder"
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "For example, 4.5",
+      "label": "New Time Off Balance in hours",
+      "isRequired": true,
+      "errorMessage": "New balance is required.",
+      "regex": "^-?\\d+(\\.\\d+)?$",
+      "id": "new-balance"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "choices": [
+        {
+          "title": "Monthly",
+          "value": "Monthly"
+        },
+        {
+          "title": "Quarterly",
+          "value": "Quarterly"
+        },
+        {
+          "title": "Yearly",
+          "value": "Yearly"
+        }
+      ],
+      "placeholder": "Select how your balance is updated...",
+      "label": "How often your balance is updated",
+      "isRequired": true,
+      "errorMessage": "Update Type is required.",
+      "wrap": true,
+      "id": "update-type"
+    },
+    {
+      "type": "Input.Text",
+      "placeholder": "Enter the hours updated monthly/quaterly/yearly",
+      "label": "How much Time off is updated?",
+      "isRequired": true,
+      "errorMessage": "This is required to regularly update in our system.",
+      "regex": "^-?\\d+(\\.\\d+)?$",
+      "id": "balance-regular-update"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Save",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "",
+          "text": "new-user-save-timeoff",
+          "value": {
+            "id": "new-user-save-timeoff",
+            "action": "new-user-save-timeoff",
+            "value": "new-user-save-timeoff",
+            "delete": false
+          }
+        }
+      },
+      "associatedInputs": "auto"
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Cancel",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "",
+          "text": "cancel",
+          "value": {
+            "id": "cancel",
+            "action": "cancel",
+            "value": "cancel",
+            "delete": false
+          }
+        }
+      },
+      "associatedInputs": "none"
+    }
+  ]
+}

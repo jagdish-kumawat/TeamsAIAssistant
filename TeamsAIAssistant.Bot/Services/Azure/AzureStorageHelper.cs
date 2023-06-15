@@ -216,5 +216,50 @@ namespace TeamsAIAssistant.Bot.Services.Azure
 
             return tableClient;
         }
+
+        // check if entity data exists in azure table storage
+        public async Task<T> GetEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : class, ITableEntity, new()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_configuration["StorageAccount:ConnectionString"]))
+                {
+                    throw new Exception("NOTE: Storage Account is not configured.");
+                }
+
+                var tableClient = await GetTableClient(tableName);
+
+                // <get_object>
+                // Get item from server-side table
+                var response = await tableClient.GetEntityAsync<T>(partitionKey, rowKey);
+                // </get_object>
+
+                return response;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        // add entity data in azure table storage
+        public async Task<bool> AddEntityAsync<T>(string tableName, T data) where T : class, ITableEntity, new()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_configuration["StorageAccount:ConnectionString"]))
+                {
+                    throw new Exception("NOTE: Storage Account is not configured.");
+                }
+
+                var tableClient = await GetTableClient(tableName);
+                await tableClient.UpsertEntityAsync<T>(data);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

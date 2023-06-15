@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder;
+﻿using Azure.Data.Tables;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using System.Threading;
@@ -10,5 +11,7 @@ namespace TeamsAIAssistant.Bot.Interfaces.Azure
     {
         Task DeleteTeamsUserDetailsAsync(TeamsChannelAccount teamsMember, ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken);
         Task StoreTeamsUserDetailsAsync(TeamsChannelAccount teamsMember, ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken);
+        Task<T> GetEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : class, ITableEntity, new();
+        Task<bool> AddEntityAsync<T>(string tableName, T data) where T : class, ITableEntity, new();
     }
 }
