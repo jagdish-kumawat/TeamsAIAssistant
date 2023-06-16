@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TeamsAIAssistant.Functions.Interfaces
 {
-    internal interface IAzureStorageHelper
+    public interface IAzureStorageHelper
     {
         Task<T> GetEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : class, ITableEntity, new();
         Task<List<T>?> GetAllEntitiesAsync<T>(string tableName) where T : class, ITableEntity, new();

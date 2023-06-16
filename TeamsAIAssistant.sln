@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsAIAssistant.Bot", "Tea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsAIAssistant.Data", "TeamsAIAssistant.Data\TeamsAIAssistant.Data.csproj", "{D68F9EC0-7031-4575-9D7E-D6C8E9C0F024}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamsAIAssistant.Functions", "TeamsAIAssistant.Functions\TeamsAIAssistant.Functions.csproj", "{E3B6A5CA-27D1-415B-B186-DA36102C3C58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsAIAssistant.Functions", "TeamsAIAssistant.Functions\TeamsAIAssistant.Functions.csproj", "{E3B6A5CA-27D1-415B-B186-DA36102C3C58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

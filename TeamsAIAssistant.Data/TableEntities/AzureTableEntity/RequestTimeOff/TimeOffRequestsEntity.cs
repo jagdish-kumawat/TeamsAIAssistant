@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamsAIAssistant.Data.TableEntities.AzureTableEntity;
 
-namespace TeamsAIAssistant.Data.AzureTableEntity.RequestTimeOff
+namespace TeamsAIAssistant.Data.TableEntities.AzureTableEntity.RequestTimeOff
 {
     public class TimeOffRequestsEntity : CommonEntity
     {

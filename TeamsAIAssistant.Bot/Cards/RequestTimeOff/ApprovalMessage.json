@@ -1,0 +1,70 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "New Time Off Request from **${RequesterName}**",
+      "wrap": true,
+      "size": "Large"
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "Requested Hours",
+          "value": "${HoursRequested} hours"
+        },
+        {
+          "title": "Current Balance",
+          "value": "${CurrentBalance} hours"
+        },
+        {
+          "title": "Reason",
+          "value": "${Reason}"
+        },
+        {
+          "title": "Requester Email",
+          "value": "${RequesterEmail}"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Approve",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "",
+          "text": "approve-timeoff",
+          "value": {
+            "id": "approve-timeoff",
+            "action": "approve-timeoff",
+            "value": "approve-timeoff",
+            "requesterId": "${RequesterId}"
+          }
+        }
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Reject",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "",
+          "text": "reject-timeoff",
+          "value": {
+            "id": "reject-timeoff",
+            "action": "reject-timeoff",
+            "value": "reject-timeoff",
+            "requesterId": "${RequesterId}"
+          }
+        }
+      }
+    }
+  ]
+}

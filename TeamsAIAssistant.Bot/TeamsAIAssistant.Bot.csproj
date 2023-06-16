@@ -18,11 +18,13 @@
     <PackageReference Include="AdaptiveCards" Version="3.0.0" />
     <PackageReference Include="AdaptiveCards.Templating" Version="1.4.0" />
     <PackageReference Include="Azure.Data.Tables" Version="12.8.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.18.1" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.18.1" />
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.18.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DataTypes.TimexExpression" Version="1.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.7" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.19.3" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.19.3" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.19.3" />
+    <PackageReference Include="Microsoft.Graph" Version="4.54.0" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DataTypes.TimexExpression" Version="1.8.8" />
+    <PackageReference Include="Polly" Version="7.2.4" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.116" />
   </ItemGroup>
 

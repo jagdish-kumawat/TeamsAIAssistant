@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TeamsAIAssistant.Data.AzureTableEntity
+namespace TeamsAIAssistant.Data.TableEntities.AzureTableEntity
 {
     public class CommonEntity : ITableEntity
     {

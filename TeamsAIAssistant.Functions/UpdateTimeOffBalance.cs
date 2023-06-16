@@ -2,7 +2,7 @@ using System;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using TeamsAIAssistant.Data.AzureTableEntity.RequestTimeOff;
+using TeamsAIAssistant.Data.TableEntities.AzureTableEntity.RequestTimeOff;
 using TeamsAIAssistant.Functions.Interfaces;
 
 namespace TeamsAIAssistant.Functions

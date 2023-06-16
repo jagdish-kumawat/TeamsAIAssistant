@@ -27,6 +27,9 @@ namespace TeamsAIAssistant.Bot
                 // Log any leaked exception from the application.
                 logger.LogError(exception, $"[OnTurnError] unhandled error : {exception.Message}");
 
+                // send error to the user
+                await turnContext.SendActivityAsync(exception.Message);
+
                 // Send a message to the user
                 var errorMessageText = "The bot encountered an error or bug.";
                 var errorMessage = MessageFactory.Text(errorMessageText, errorMessageText, InputHints.ExpectingInput);

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 using System;
@@ -8,9 +10,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using TeamsAIAssistant.Bot.Dialogs.Common;
 using TeamsAIAssistant.Bot.Interfaces.Azure;
+using TeamsAIAssistant.Bot.Interfaces.Common;
+using TeamsAIAssistant.Bot.Interfaces.Teams;
 using TeamsAIAssistant.Bot.Services.Azure;
 using TeamsAIAssistant.Bot.Services.Cards;
-using TeamsAIAssistant.Data.AzureTableEntity.RequestTimeOff;
+using TeamsAIAssistant.Bot.Services.Teams;
+using TeamsAIAssistant.Data.Models.Common;
+using TeamsAIAssistant.Data.Models.Teams;
+using TeamsAIAssistant.Data.TableEntities.AzureTableEntity;
+using TeamsAIAssistant.Data.TableEntities.AzureTableEntity.RequestTimeOff;
 
 namespace TeamsAIAssistant.Bot.Dialogs.RequestTimeOff
 {
@@ -18,12 +26,13 @@ namespace TeamsAIAssistant.Bot.Dialogs.RequestTimeOff
     {
         private readonly IConfiguration _configuration;
         private readonly IAzureStorageHelper _azureStorageHelper;
-        private readonly string RequestTimeOffDialogID = "RequestTimeOffDlg";
-        public RequestTimeOffDialog(IConfiguration configuration,IAzureStorageHelper azureStorageHelper)
+        private readonly ITeamsHelper _teamsHelper;
+        public RequestTimeOffDialog(IConfiguration configuration,IAzureStorageHelper azureStorageHelper, ITeamsHelper teamsHelper)
             : base(nameof(RequestTimeOffDialog))
         {
             _configuration = configuration;
             _azureStorageHelper = azureStorageHelper;
+            _teamsHelper = teamsHelper;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new LoginDialog(_configuration));
@@ -220,6 +229,51 @@ namespace TeamsAIAssistant.Bot.Dialogs.RequestTimeOff
                         {
                             await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your time off request has been submitted and sent for approval."), cancellationToken);
                             return await stepContext.EndDialogAsync(null, cancellationToken);
+                            //var managerFound = await _azureStorageHelper.GetEntityAsync<UserDetailsEntity>(_configuration["StorageAccount:UserDetailsTableName"], stepContext.Context.Activity.Conversation.TenantId, managerId);
+                            //bool appInstalled = false;
+                            //if (managerFound == null)
+                            //{
+                            //    var appInstallationStatus = await _teamsHelper.InstalledAppsinPersonalScopeAsync(stepContext, managerId, cancellationToken);
+                            //    if (appInstallationStatus)
+                            //    {
+                            //        appInstalled = true;
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    appInstalled = true;
+                            //}
+
+                            //if (appInstalled)
+                            //{
+                            //    var paths = new string[] { ".", "Cards", "RequestTimeOff", "ApprovalMessage.json" };
+                            //    var userDetails = await _azureStorageHelper.GetEntityAsync<UserDetailsEntity>(_configuration["StorageAccount:UserDetailsTableName"], stepContext.Context.Activity.Conversation.TenantId, stepContext.Context.Activity.From.AadObjectId);
+                            //    object data = new { RequesterName = userDetails.UserDisplayName, HoursRequested = hoursRequested, Reason = reason, CurrentBalance = currentBalance.Balance, RequesterEmail = userDetails.UserEmail, RequesterId = userDetails.AadObjectID };
+                            //    Attachment attachment = CardsHelper.CreateAdaptiveCardWithData(paths, data);
+
+                            //    MessagePayloadDto messagePayloadDto = new MessagePayloadDto
+                            //    {
+                            //        Attachment = JsonConvert.SerializeObject(attachment),
+                            //        AadObjectId = managerId,
+                            //        TenantId = stepContext.Context.Activity.Conversation.TenantId,
+                            //        SummaryText = "Time off request from " + userDetails.UserDisplayName,
+                            //    };
+
+                            //    var sendProactiveMessage = await _teamsHelper.SendProactiveMessageAsync(messagePayloadDto);
+                            //    if (!sendProactiveMessage)
+                            //    {
+                            //        await stepContext.Context.SendActivityAsync(MessageFactory.Text("There was an error sending a proactive message to your manager."), cancellationToken);
+                            //        return await stepContext.EndDialogAsync(null, cancellationToken);
+                            //    }
+
+                            //    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your time off request has been submitted and sent for approval."), cancellationToken);
+                            //    return await stepContext.EndDialogAsync(null, cancellationToken);
+                            //}
+                            //else
+                            //{
+                            //    await stepContext.Context.SendActivityAsync(MessageFactory.Text("We could not install the bot in your manager's teams personal scope. Ask your manager to manually install the bot."), cancellationToken);
+                            //    return await stepContext.EndDialogAsync(null, cancellationToken);
+                            //}
                         }
                         else
                         {

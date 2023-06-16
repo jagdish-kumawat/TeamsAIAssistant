@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Text;
 using Microsoft.Bot.Schema;
+using System.Collections.Generic;
 
 namespace TeamsAIAssistant.Bot.Services.Cards
 {
@@ -58,6 +59,25 @@ namespace TeamsAIAssistant.Bot.Services.Cards
             };
 
             return adaptiveCardAttachment;
+        }
+
+        public static HeroCard GetHeroCard(string title, string subtitle, string text, string imageURL, string buttonText, string buttonURL)
+        {
+            var heroCard = new HeroCard();
+
+            heroCard.Title = title ?? string.Empty;
+            heroCard.Subtitle = subtitle ?? string.Empty;
+            heroCard.Text = text ?? string.Empty;
+            if (!string.IsNullOrEmpty(imageURL))
+            {
+                heroCard.Images = new List<CardImage> { new CardImage(imageURL) };
+            }
+            if (!string.IsNullOrEmpty(buttonURL))
+            {
+                heroCard.Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, buttonText ?? string.Empty, value: buttonURL) };
+            }
+
+            return heroCard;
         }
     }
 }

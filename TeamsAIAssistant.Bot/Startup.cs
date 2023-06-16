@@ -16,9 +16,11 @@ using TeamsAIAssistant.Bot.Bots;
 using TeamsAIAssistant.Bot.Dialogs;
 using TeamsAIAssistant.Bot.Interfaces.Azure;
 using TeamsAIAssistant.Bot.Interfaces.Cards;
+using TeamsAIAssistant.Bot.Interfaces.Common;
 using TeamsAIAssistant.Bot.Interfaces.Teams;
 using TeamsAIAssistant.Bot.Services.Azure;
 using TeamsAIAssistant.Bot.Services.Cards;
+using TeamsAIAssistant.Bot.Services.Common;
 using TeamsAIAssistant.Bot.Services.Teams;
 
 namespace TeamsAIAssistant.Bot
@@ -60,6 +62,7 @@ namespace TeamsAIAssistant.Bot
             services.AddSingleton<ITeamsHelper, TeamsHelper>();
             services.AddSingleton<ICardsHelper, CardsHelper>();
             services.AddSingleton(async x => await RedisConnection.InitializeAsync(connectionString: Configuration["ConnectionStrings:RedisCache"].ToString()));
+            services.AddTransient(typeof(IApiHelper<>), typeof(ApiHelper<>));
 
             // The MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();

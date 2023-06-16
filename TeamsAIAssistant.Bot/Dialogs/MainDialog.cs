@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 using TeamsAIAssistant.Bot.Dialogs.RequestTimeOff;
 using TeamsAIAssistant.Bot.Interfaces.Azure;
 using TeamsAIAssistant.Bot.Interfaces.Cards;
+using TeamsAIAssistant.Bot.Interfaces.Common;
+using TeamsAIAssistant.Bot.Interfaces.Teams;
+using TeamsAIAssistant.Data.Models.Common;
 
 namespace TeamsAIAssistant.Bot.Dialogs
 {
@@ -26,18 +29,22 @@ namespace TeamsAIAssistant.Bot.Dialogs
         private readonly IConfiguration _configuration;
         private readonly IAzureStorageHelper _azureStorageHelper;
         private readonly ICardsHelper _cardsHelper;
+        private readonly ITeamsHelper _teamsHelper;
+        private readonly IApiHelper<ApiResponseDto> _apiHelper;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ILogger<MainDialog> logger, IConfiguration configuration, IAzureStorageHelper azureStorageHelper, ICardsHelper cardsHelper)
+        public MainDialog(ILogger<MainDialog> logger, IConfiguration configuration, IAzureStorageHelper azureStorageHelper, ICardsHelper cardsHelper, ITeamsHelper teamsHelper, IApiHelper<ApiResponseDto> apiHelper)
             : base(nameof(MainDialog))
         {
             _logger = logger;
             _configuration = configuration;
             _azureStorageHelper = azureStorageHelper;
             _cardsHelper = cardsHelper;
+            _teamsHelper = teamsHelper;
+            _apiHelper = apiHelper;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new RequestTimeOffDialog(_configuration, _azureStorageHelper));
+            AddDialog(new RequestTimeOffDialog(_configuration, _azureStorageHelper, _teamsHelper));
 
             var waterfallSteps = new WaterfallStep[]
             {

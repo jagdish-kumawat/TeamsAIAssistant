@@ -9,7 +9,7 @@ using TeamsAIAssistant.Functions.Interfaces;
 
 namespace TeamsAIAssistant.Functions.Services
 {
-    internal class AzureStorageHelper : IAzureStorageHelper
+    public class AzureStorageHelper : IAzureStorageHelper
     {
         private readonly IConfiguration _configuration;
         public AzureStorageHelper(IConfiguration configuration)

@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TeamsAIAssistant.Bot.Interfaces.Azure;
 using TeamsAIAssistant.Bot.Interfaces.Teams;
-using TeamsAIAssistant.Data.AzureTableEntity;
+using TeamsAIAssistant.Data.TableEntities.AzureTableEntity;
 
 namespace TeamsAIAssistant.Bot.Services.Azure
 {

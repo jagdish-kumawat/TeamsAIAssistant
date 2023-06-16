@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Core" Version="1.27.0" />
     <PackageReference Include="Azure.Data.Tables" Version="12.8.0" />
+    <PackageReference Include="Microsoft.Bot.Schema" Version="4.20.0" />
   </ItemGroup>
 
 </Project>
